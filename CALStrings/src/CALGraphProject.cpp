@@ -3,7 +3,7 @@
 #include <fstream>
 #include <chrono>
 #include <Windows.h>
-
+#include <vector>
 #include "GraphViewer\GraphViewer.h"
 #include "CALGraphProject.h"
 #include "Graph.h"
@@ -52,15 +52,32 @@ void presetTest(string presetId) {
 
 	preset->displayGraph(gv);
 
+
 	while (1) {
 		char input;
 		string origin, dest;
 		double dist;
-
+		cout << "1. Approximate String Matching" << endl;
+		cout << "2. Exact String Matching" << endl;
+		cin >> input;
 		cout << "-- Choose your starting location: --" << endl;
-		cin >> origin;
+		cin.ignore();
+		getline(cin, origin);
+		cout << origin << endl;
+		if(input == 1)
+			origin = preset->approximateStringMatching(origin);
+		cout << origin << endl;
+		//else
+			//origin = preset->exactStringMatching(origin);
 		cout << "-- Choose your destination: --" << endl;
-		cin >> dest;
+		cin.clear();
+		cin.ignore();
+		getline(cin, dest);
+		if(input == 1)
+			dest = preset->approximateStringMatching(dest);
+		cout << dest << endl;
+		//else
+			//dest = preset->exactStringMatching(dest);
 		cout << "-- Choose your preference (1 - 4 | press any other key to exit) --" << endl;
 		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n"
 				<< "4. Number of transport transfers\n"  <<"5. Default (considers various parameters)" << endl;
