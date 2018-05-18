@@ -8,19 +8,19 @@ using namespace std;
 
 class Route {
 	string name;
-	string stops;
+	vector<string> stops;
 
 public:
 	Route(string name);
-	void addStop(string stop);
+	void addStop(const string stop);
 
 	bool operator==(const Route & r);
 	void debug();
 };
 
-Route::Route(const string name): name(name) {stops = "";}
+Route::Route(const string name): name(name) {}
 
-void Route::addStop(const string stop) {stops += "|" + stop + "|";}
+void Route::addStop(const string stop) {stops.push_back(stop);}
 
 bool Route::operator==(const Route & r) {return name == r.name;}
 
