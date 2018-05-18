@@ -14,7 +14,7 @@
 #include <pthread.h>
 
 #include "MutablePriorityQueue.h"
-
+#include "Route.h"
 
 
 using namespace std;
@@ -412,6 +412,7 @@ void Graph<T>::displayPath(GraphViewer *gv, const T &origin, const T &dest) {
 
 template<class T>
 class TransportGrid: public Graph<T> {
+	vector<Route *> routes;
 	double metroDist, busDist, trainDist;
 
 	double getSpeed(string type);
@@ -421,6 +422,8 @@ class TransportGrid: public Graph<T> {
 	void *trainWrapper(void *queue);
 	double improvedAlgorithmThread(const Vertex<T> *origin, const Vertex<T> *dest, MutablePriorityQueue<Vertex<T>> *priorityQueue, string type, int iT);
 public:
+	void setRoutes(vector<Route *> r);
+
 	bool addStation(const T &in, const string mode);
 	bool addConnection(const T &origin, const T &dest, double dist, double price, string type);
 	bool addUConnection(const T &origin, const T &dest, double dist, double price, string type);
@@ -428,6 +431,9 @@ public:
 	double dijkstraAlgorithm(const T &origin, const T &dest);
 	double improvedAlgorithm(const T &origin, const T &dest);
 };
+
+template <class T>
+void TransportGrid<T>::setRoutes(vector<Route *> r) {routes = r;}
 
 template <class T>
 double TransportGrid<T>::getSpeed(string type) {

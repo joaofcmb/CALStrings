@@ -179,8 +179,8 @@ TransportGrid<string> *createGraphPreset(string filename) {
 	ifstream infile;
 	infile.open(filename, ios::in);
 
-	vector<Route> routes;
-	int index = -1;
+	vector<Route *> routes;
+
 	double dist, price;
 	string command, arg1, arg2, type;
 	while (infile >> command >> arg1 >> arg2) {
@@ -189,18 +189,33 @@ TransportGrid<string> *createGraphPreset(string filename) {
 		else if (command == "U_EDGE") {
 			infile >> dist >> price >> type;
 			g->addUConnection(arg1, arg2, dist, price, type);
+
+			if (routes.size() > 0) {
+				auto r = routes.back();
+				r->addStop(arg2);
+
+				if (r == routes[0])	r->addStop(arg1);
+			}
 		}
 		else if (command == "D_EDGE") {
 			infile >> dist >> price>> type;
 			g->addConnection(arg1, arg2, dist, price, type);
+
+			if (routes.size() > 0) {
+				auto r = routes.back();
+				r->addStop(arg2);
+
+				if (r == routes[0])	r->addStop(arg1);
+			}
 		}
 		else if (command == "ROUTE") {
 			arg1 += " " + arg2;
 			getline(infile, arg2);
-			routes.push_back(Route(arg1 + arg2));
-			index++;
+			routes.push_back(new Route(arg1 + arg2));
 		}
 	}
+
+	g->setRoutes(routes);
 
 	infile.close();
 	return g;
