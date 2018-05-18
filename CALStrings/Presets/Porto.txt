@@ -33,6 +33,7 @@ STATION Coimbroes 			BT
 STATION S.Roque 			B	
 STATION Aliados 			BM
 
+ROUTE Linha Laranja (Metro)
 U_EDGE Viso				Matosinhos			24000	4.8	    M
 U_EDGE Casa_da_Musica	Viso				14400	3.88    M
 U_EDGE Lapa				Casa_da_Musica		7200	1.44    M
@@ -41,6 +42,8 @@ U_EDGE Bolhao			Trindade			4800	0.96    M
 U_EDGE Heroismo			Bolhao				4800	0.96    M
 U_EDGE Campanha			Heroismo			7200	1.44    M
 U_EDGE Contumil			Campanha			9600	1.92    M
+
+ROUTE Linha Amarela (Metro)
 U_EDGE IPO				Hospital_S.Joao		4800	0.96    M
 U_EDGE Polo_Universitario	IPO				4800	0.96    M
 U_EDGE Salgueiros		Polo_Universitario	7200	1.44    M
@@ -55,11 +58,13 @@ U_EDGE Jardim_do_Morro	General_Torres		4800	0.96    M
 U_EDGE General_Torres	Camara_de_Gaia		2400	0.48    M
 U_EDGE Camara_de_Gaia	Joao_de_Deus		4800	0.96    M
 
+ROUTE Linha de Aveiro (Comboio)
 U_EDGE Coimbroes		General_Torres		48000	2.4    T
 U_EDGE General_Torres	Campanha			60000	3.0    T
 U_EDGE Campanha			Contumil			36000	1.8    T
 U_EDGE Campanha			S.Bento				30000	1.5    T
 
+ROUTE Autocarro 308
 U_EDGE GaiaShopping		Joao_de_Deus		12600	1.4   B
 U_EDGE Joao_de_Deus		Freixo				18000	1.6   B				
 U_EDGE Freixo			Campanha			5400	0.5   B
@@ -77,6 +82,7 @@ U_EDGE Campo_Alegre		Casa_da_Musica		7200	1     B
 U_EDGE Casa_da_Musica 	Prelada				7200	1     B
 U_EDGE Prelada			IPO					10800 	1.16  B
 
+ROUTE Autocarro 207
 U_EDGE Matosinhos		Foz					27000	2.4   B
 U_EDGE Foz				Campo_Alegre		12600	1.52  B
 U_EDGE Campo_Alegre		Palacio_de_Cristal	5400	1     B
@@ -86,6 +92,7 @@ U_EDGE Aliados			Bolhao				9000	1     B
 U_EDGE Bolhao			Heroismo			5400	1     B
 U_EDGE Heroismo			Campanha			7200	1     B
 
+ROUTE Autocarro 306
 U_EDGE General_Torres	S.Bento				108000	1.16    B
 U_EDGE S.Bento			Trindade			54000	1       B
 U_EDGE Trindade			Lapa				72000	1       B

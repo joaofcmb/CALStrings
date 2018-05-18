@@ -3,9 +3,11 @@
 #include <fstream>
 #include <chrono>
 #include <Windows.h>
+
 #include "GraphViewer\GraphViewer.h"
 #include "CALGraphProject.h"
 #include "Graph.h"
+#include "Route.h"
 
 using namespace std;
 
@@ -177,6 +179,8 @@ TransportGrid<string> *createGraphPreset(string filename) {
 	ifstream infile;
 	infile.open(filename, ios::in);
 
+	vector<Route> routes;
+	int index = -1;
 	double dist, price;
 	string command, arg1, arg2, type;
 	while (infile >> command >> arg1 >> arg2) {
@@ -189,6 +193,12 @@ TransportGrid<string> *createGraphPreset(string filename) {
 		else if (command == "D_EDGE") {
 			infile >> dist >> price>> type;
 			g->addConnection(arg1, arg2, dist, price, type);
+		}
+		else if (command == "ROUTE") {
+			arg1 += " " + arg2;
+			getline(infile, arg2);
+			routes.push_back(Route(arg1 + arg2));
+			index++;
 		}
 	}
 
