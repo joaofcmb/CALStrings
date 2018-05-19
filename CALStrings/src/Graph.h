@@ -430,7 +430,7 @@ public:
 	void setRoutes(vector<Route *> r);
 	vector<Route *> getRoutes();
 
-	MutablePriorityQueue<Stop> approximateStringMatching(const string source);
+	MutablePriorityQueue<Stop> ApproximateStringMatching(const string source);
 	bool ExactStringMatching(const string source);
 
 	vector <Route *> getRoutesWith(const string source);
@@ -476,11 +476,27 @@ MutablePriorityQueue<Stop> TransportGrid<T>::approximateStringMatching(const str
 	return top;
 }
 */
+template<class T>
+MutablePriorityQueue<Stop> TransportGrid<T>::ApproximateStringMatching(const string source) {
+	MutablePriorityQueue<Stop> q;
+
+	for (auto route : getRoutes()) {
+		vector<Stop> v = route->possibleStops(source); // possibleStops() also tests the source against the route name
+
+		for (auto stop : v) {
+			q.insert(new Stop(stop));
+		}
+	}
+
+	return q;
+}
+
+
 
 template <class T>
 bool TransportGrid<T>::ExactStringMatching(const string source) {
 	for (auto route : getRoutes())
-		if (route->getName() == source || route->hasStop(source))	return true;
+		if (route->hasStop(source))	return true; // hasStop() also tests the source against the route name
 
 	return false;
 }

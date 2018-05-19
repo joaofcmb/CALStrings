@@ -4,34 +4,47 @@
 #include <vector>
 #include <string>
 
+#define MAX_ACCEPTED_COST	3
+
 using namespace std;
 
 
 class Stop {
 	string name;
 	int cost = 0;
-
-	int queueIndex = 0; 				// Required by MutablePriorityQueue
-
 public:
+	int queueIndex = 0; 						// Required by MutablePriorityQueue
+
 	Stop(string name);
-	bool operator<(Stop & stop) const; 	// Required by MutablePriorityQueue
+	Stop(string name, int cost);
+	Stop(const Stop &s);
+
+	bool operator <(const Stop & stop) const; 	// Required by MutablePriorityQueue
 
 	string getName() const;
+	int getCost() const;
+
+	void setCost(const int cost);
 };
 
 Stop::Stop(string name): name(name) {}
 
-bool Stop::operator<(Stop & stop) const {return (this->cost < stop.cost);}
+Stop::Stop(string name, int cost): name(name), cost(cost) {}
+Stop::Stop(const Stop &s): name(s.getName()), cost(s.getCost()) {}
+
+bool Stop::operator <(const Stop & stop) const {return (cost < stop.cost);}
 
 string Stop::getName() const {return this->name;}
 
+int Stop::getCost() const {return this->cost;}
+
+void Stop::setCost(const int cost) {this->cost = cost;}
 
 class Route {
 	string name;
 	vector<Stop> stops;
 
-	int levDistance(const string source, const string target);
+	int AproximateStringMatching(const string source, const string target);
 	int StringMatching(const string text, const string pattern);
 public:
 	Route(string name);
@@ -42,7 +55,7 @@ public:
 	vector<Stop> getStops() const;
 
 	bool hasStop(const string source);
-	//nameAndCost approximateStringMatching(const string source);
+	vector<Stop> possibleStops(const string source);
 };
 
 Route::Route(const string name): name(name) {}
@@ -53,11 +66,11 @@ string Route::getName() const {return name;}
 
 vector<Stop> Route::getStops() const {return stops;}
 
-int Route::levDistance(const string source, const string target)
+int Route::AproximateStringMatching(const string text, const string pattern)
 {
 	// Step 1
-	const int n = source.length();
-	const int m = target.length();
+	const int n = text.length();
+	const int m = pattern.length();
 	if (n == 0) {
 		return m;
 	}
@@ -81,10 +94,10 @@ int Route::levDistance(const string source, const string target)
 	}
 	// Step 3
 	for (int i = 1; i <= n; i++) {
-		const char s_i = source[i-1];
+		const char s_i = text[i-1];
 		// Step 4
 		for (int j = 1; j <= m; j++) {
-			const char t_j = target[j-1];
+			const char t_j = pattern[j-1];
 			// Step 5
 			int cost;
 			if (s_i == t_j) {
@@ -105,8 +118,8 @@ int Route::levDistance(const string source, const string target)
 			// (http://www.acm.org/~hlb/publications/asm/asm.html)
 			if (i>2 && j>2) {
 				int trans=matrix[i-2][j-2]+1;
-				if (source[i-2]!=t_j) trans++;
-				if (s_i!=target[j-2]) trans++;
+				if (text[i-2]!=t_j) trans++;
+				if (s_i!=pattern[j-2]) trans++;
 				if (cell>trans) cell=trans;
 			}
 			matrix[i][j]=cell;
@@ -114,6 +127,30 @@ int Route::levDistance(const string source, const string target)
 	}
 	// Step 7
 	return matrix[n][m];
+	/*
+	int T = text.length();
+	int P = pattern.length();
+
+	if (T == 0)		return P;
+	if (P == 0)		return T;
+	if (T + P == 2)	return (pattern[0] == text[0]) ? 0 : 1;
+
+	int dist[T], oldDist, newDist;
+
+	for (int j = 0; j < T; j++)		dist[j] = j;
+
+	for (int i = 1; i < P; i++) {
+		oldDist = dist[0];
+		dist[0] = i;
+		for (int j = 1; j < T; j++) {
+			newDist = (pattern[i] == text[j]) ? oldDist : 1 + min(oldDist, min(dist[j], dist[j-1]));
+			oldDist = dist[j];
+			dist[j] = newDist;
+		}
+	}
+
+	return dist[T-1];
+	*/
 }
 
 int Route::StringMatching(const string text, const string pattern) {
@@ -154,34 +191,26 @@ bool Route::hasStop(const string source) {
 	for (auto stop : getStops())
 		if (StringMatching(source, stop.getName()) > 0)		return true;
 
-	return false;
+	return StringMatching(source, getName()) > 0;
 }
 
-/*
-nameAndCost Route::approximateStringMatching(const string source)
-{
-	nameAndCost nc;
-	const int maxCost = 20;
-	int currCost=0;
-	int cost = 100;
-	//vector<string> stations = this->getAllStations();
-	string finalTarget;
-	string target;
-	vector<string> stops = getStops();
-	for(unsigned int i = 0; i < stops.size(); i++){
-		target = stops[i];
-		currCost = levDistance(source, target);
-		if(currCost < maxCost){
-			if(currCost < cost){
-				finalTarget = target;
-				cost = currCost;
-			}
+vector<Stop> Route::possibleStops(const string source) {
+	vector<Stop> v;
+	int cost;
+
+	for (auto stop : getStops()) {
+		cost = AproximateStringMatching(source, stop.getName());
+
+		if (cost <= MAX_ACCEPTED_COST)	{
+			stop.setCost(cost);
+			v.push_back(stop);
 		}
-
 	}
-	nc.name = finalTarget;
-	nc.cost = cost;
-	return nc;
+
+	cost = AproximateStringMatching(source, getName());
+	if (cost <= MAX_ACCEPTED_COST)		v.push_back(Stop(getName(), cost));
+
+	return v;
 }
-*/
+
 #endif /* ROUTE_H_ */

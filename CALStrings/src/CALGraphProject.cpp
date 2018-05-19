@@ -4,6 +4,8 @@
 #include <chrono>
 #include <Windows.h>
 #include <vector>
+#include <set>
+
 #include "GraphViewer\GraphViewer.h"
 #include "CALGraphProject.h"
 #include "Graph.h"
@@ -45,6 +47,53 @@ int main() {
 	}
 }
 
+string AproximateStringMenu(string input, TransportGrid<string> *preset) {
+	MutablePriorityQueue<Stop> q = preset->ApproximateStringMatching(input);
+
+	if (q.empty()) {
+		cout << "No match for " << input << " found.\n\n";
+		return "";
+	}
+
+	Stop* firstStop = q.extractMin();
+
+	if (firstStop->getCost() == 0)		cout << "Found match for " << firstStop->getName() << ".\n";
+	else								cout << "Closest match was " << firstStop->getName() << ".\n";
+
+	if (!q.empty())						cout << "\nHowever, the following entries were also considered:" << endl;
+
+	// Take rest of unique stops and put them in a vector for easy access
+	vector<string> candidates;
+	set<string> dupCheck;
+
+	while (!q.empty()) {
+		string s = q.extractMin()->getName();
+
+		if (dupCheck.insert(s).second && s != firstStop->getName())
+			candidates.push_back(s);
+	}
+
+	int i = 1;
+	for (string name : candidates)		cout << i++ << ". " << name << endl;
+
+	cout << "\nPress '0' to get more info on the initial match." << endl;
+	if (candidates.size() > 0)			cout << "To get more info on the other entries instead, enter the corresponding number." << endl;
+
+	cin.clear();
+	cin >> input;
+
+	unsigned int val = stoi(input, nullptr);
+
+	if (val == 0)									input = firstStop->getName();
+	else if (val > 0 && val <= candidates.size())	input = candidates[val - 1];
+	else											return "";
+
+	input = preset->ShowInfo(input, 1);
+
+	return input;
+}
+
+
 void presetTest(string presetId) {
 	TransportGrid<string>* preset = createGraphPreset("Presets\\" + presetId + ".txt");
 	GraphViewer *gv = new GraphViewer(1200, 800, true);
@@ -75,13 +124,10 @@ void presetTest(string presetId) {
 		cin.clear();
 		getline(cin, input);
 
-		if (c == '1') {/*
-			MutablePriorityQueue q = preset->approximateStringMatching(origin);
-			origin = top4[0];
-			cout << "Origin: " << origin << endl;
-			origin = checkString(top4);
-			cout << "Alright, your origin is: " << origin << endl
-			<< endl; */
+		if (c == '1') {
+			origin = AproximateStringMenu(input, preset);
+
+			if (origin == "")		continue;
 		}
 		else {
 			if (!preset->ExactStringMatching(input)) {
@@ -95,19 +141,16 @@ void presetTest(string presetId) {
 			origin = input;
 		}
 
-
 		cout << "-- Search for Stop or Route (Destination): --" << endl;
 
 		cin.ignore();
 		cin.clear();
 		getline(cin, input);
 
-		if (c == '1'){/*
-			vector<string> top4 = preset->approximateStringMatching(dest);
-			dest = top4[0];
-			cout << "Destination: " << dest << endl;
-			dest = checkString(top4);
-			cout << "Alright, your destination is: " << dest << endl;*/
+		if (c == '1') {
+			dest = AproximateStringMenu(input, preset);
+
+			if (dest == "")		continue;
 		}
 		else {
 			if (!preset->ExactStringMatching(input)) {
@@ -121,10 +164,10 @@ void presetTest(string presetId) {
 			dest = input;
 		}
 
-		cout << "Path from "<< origin << " to " << dest << "." << endl;
+		cout << "\nPath from "<< origin << " to " << dest << "." << endl;
 
 
-		cout << "-- Choose your preference (1 - 4 | press any other key to exit) --\n";
+		cout << "\n-- Choose your preference (1 - 4 | press any other key to exit) --\n";
 		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n";
 		cout << "4. Number of transport transfers\n" << "5. Default (considers various parameters)" << endl;
 
