@@ -22,30 +22,28 @@ using namespace std;
  */
 
 int main() {
+	while(1) {
+		// Choose what to do (Test Preset, Procedurally Generated Graph Test, etc..)
+		cout << "-- What do you want to do? --\n";
+		cout << "-- 1. Porto Preset Test --\n";
+		cout << "-- 2. Procedurally Generated Graph Test --\n";
+		cout << "-- 3. Exit Application --"<< endl;
 
-	char input;
-	while(1){
-	// This is where the algorithm would be chosen (and then put in a function pointer)
-	cout << "-- What do you want to do? --" << endl;
-	cout << "-- 1. Porto Preset Test --" << endl;
-	cout << "-- 2. Procedurally Generated Graph Test --" << endl;
-
-	cin >> input;
-	// Choose what to do (Test Preset, Procedurally Generated Graph Test, etc..)
-	if(input=='1')
-		presetTest("Porto");
-	else if(input =='2')
-		genTest();
-	else
-		system("CLS");
-		cout << "Choose '1' or '2' !!! " << endl;
-
+		switch(getchar()) {
+		case '1':
+			presetTest("Porto");
+			break;
+		case '2':
+			genTest();
+			break;
+		case '3':
+			return 0;
+		default:
+			cout << "Number out of range\n\n";
+			continue;
+		}
 	}
-
-
 }
-
-string checkString(vector<string> top4);
 
 void presetTest(string presetId) {
 	TransportGrid<string>* preset = createGraphPreset("Presets\\" + presetId + ".txt");
@@ -55,119 +53,137 @@ void presetTest(string presetId) {
 	preset->displayGraph(gv);
 
 	while (1) {
+		char c;
 		string input;
 		string origin, dest;
 		double dist;
 
 
-		cout << "1. Approximate String Matching" << endl;
-		cout << "2. Exact String Matching" << endl;
+		cout << "1. Approximate String Matching\n";
+		cout << "2. Exact String Matching\n";
+		cout << "Press any other character to exit" << endl;
 
-		cin >> input;
+		cin.clear();
+		cin >> c;
 
-		cout << "-- Choose your starting location: --" << endl;
+		if (c < '1' || c > '2')		break;
+
+
+		cout << "-- Search for Stop or Route (Origin): --" << endl;
 
 		cin.ignore();
 		cin.clear();
-		getline(cin, origin);
+		getline(cin, input);
 
-		if(input == "1"){
-			vector<string> top4 = preset->approximateStringMatchingImproved(origin);
+		if (c == '1') {/*
+			MutablePriorityQueue q = preset->approximateStringMatching(origin);
 			origin = top4[0];
 			cout << "Origin: " << origin << endl;
 			origin = checkString(top4);
 			cout << "Alright, your origin is: " << origin << endl
-			<< endl;;
+			<< endl; */
+		}
+		else {
+			if (!preset->ExactStringMatching(input)) {
+				cout << "No match for " << input << " found.\n\n";
+				continue;
+			}
+			input = preset->ShowInfo(input, 1);
+
+			if (input == "") continue;
+
+			origin = input;
 		}
 
 
-		//else
-		//origin = preset->exactStringMatching(origin);
-
-		cout << "-- Choose your destination: --" << endl;
+		cout << "-- Search for Stop or Route (Destination): --" << endl;
 
 		cin.ignore();
 		cin.clear();
-		getline(cin, dest);
+		getline(cin, input);
 
-		if(input == "1"){
-			vector<string> top4 = preset->approximateStringMatchingImproved(dest);
+		if (c == '1'){/*
+			vector<string> top4 = preset->approximateStringMatching(dest);
 			dest = top4[0];
 			cout << "Destination: " << dest << endl;
 			dest = checkString(top4);
-			cout << "Alright, your destination is: " << dest << endl;
+			cout << "Alright, your destination is: " << dest << endl;*/
+		}
+		else {
+			if (!preset->ExactStringMatching(input)) {
+				cout << "No match for " << input << " found.\n\n";
+				continue;
+			}
+			input = preset->ShowInfo(input, 1);
+
+			if (input == "") continue;
+
+			dest = input;
 		}
 
-			dest = preset->approximateStringMatching(dest);
-		//else
-			//dest = preset->exactStringMatching(dest);
-		cout << "Destination: " << dest << endl;
-		cout << "-- Choose your preference (1 - 4 | press any other key to exit) --" << endl;
-		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n"
-				<< "4. Number of transport transfers\n"  <<"5. Default (considers various parameters)" << endl;
+		cout << "Path from "<< origin << " to " << dest << "." << endl;
 
-		cin >> input;
 
-		switch(stoi(input, nullptr)) {
-		case 1:
+		cout << "-- Choose your preference (1 - 4 | press any other key to exit) --\n";
+		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n";
+		cout << "4. Number of transport transfers\n" << "5. Default (considers various parameters)" << endl;
+
+		cin.ignore();
+		cin.clear();
+		cin >> c;
+		switch(c) {
+		case '1':
 			preset->setWeights("price");
 			dist = preset->dijkstraAlgorithm(origin, dest);
-			cout << "- Price: " << dist <<"€" << endl;
+			cout << "- Price: " << dist << " euros" << endl;
 			break;
-		case 2:
+		case '2':
 			preset->setWeights("time");
 			dist = preset->dijkstraAlgorithm(origin, dest)/60;
 			cout << "- Total Time: " << dist << " minutes" << endl;
 			break;
-		case 3:
+		case '3':
 			preset->setWeights("distance");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			cout << "- Distance: " << dist << " meters" <<endl;
 			break;
-		case 4:
+		case '4':
 			preset->setWeights("transfer");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			cout << "- Number of vehicle changes: " << dist << endl;
 			break;
-		case 5:
+		case '5':
 			preset->setWeights("default");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			break;
 		default:
-			return;
+			continue;
 		}
-
 
 		preset->displayGraph(gv); // to update weights
 		preset->displayPath(gv, origin, dest);
 
+		cout << "\nPath calculated.\n" << endl;
 	}
 	return;
 }
 
 void generateRandomTransportGraph(int& n, TransportGrid<string>* g) {
 	string type, type2;
-	int randType, randDist, randPrice, aux;
+	int randDist, randPrice;
 
 
-		for(int i = 0; i < n; i++){
-		/*	randType = rand()%(7-1 + 1) + 1;
-			switch(randType){
-			case 1: type = "BTM"; break;
-			case 2: type = "BM"; break;
-			case 3: type = "TM"; break;
-			case 4: type = "M"; break;
-			}*/
-			g->addStation(to_string(i), "M");
-		}
+	for(int i = 0; i < n; i++){
+		g->addStation(to_string(i), "M");
+	}
 
-		for(int i = 0; i < n; i++){
+	for(int i = 0; i < n; i++){
 
-			randDist = rand()%(10000-300 + 1) + 300;
-			randPrice = rand()%(70-1 + 1) + 1;
-			g->addUConnection(to_string(i), to_string(i+1), randDist, randPrice, "M");
-			/*
-			 * if(g->findVertex(to_string(i)+"(B)")!=NULL)
+		randDist = rand()%(10000-300 + 1) + 300;
+		randPrice = rand()%(70-1 + 1) + 1;
+		g->addUConnection(to_string(i), to_string(i+1), randDist, randPrice, "M");
+		/*
+		 * if(g->findVertex(to_string(i)+"(B)")!=NULL)
 				type = "B";
 			else if(g->findVertex(to_string(i)+"(M)")!=NULL)
 				type = "M";
@@ -180,8 +196,8 @@ void generateRandomTransportGraph(int& n, TransportGrid<string>* g) {
 				}
 				aux++;
 			}*/
-		}
-		g->addUConnection(to_string(n-1), to_string(0), randDist, randPrice, "M");
+	}
+	g->addUConnection(to_string(n-1), to_string(0), randDist, randPrice, "M");
 }
 
 void genTest() {
@@ -221,28 +237,29 @@ string checkString(vector<string> top4){
 	cout << "Did we get it right or did you mean: "
 			<< endl << "{"
 			<< endl << "	1." << top4[1]
-			<< endl << "	2." << top4[2]
-			<< endl << "	3." << top4[3] << "?"
-			<< endl << "}"
-			<< endl
-			<< endl << "4. Yes we got it right :3" << endl;
+										<< endl << "	2." << top4[2]
+																	<< endl << "	3." << top4[3] << "?"
+																	<< endl << "}"
+																	<< endl
+																	<< endl << "4. Yes we got it right :3" << endl;
 
-			int input2;
-			cin >> input2;
+	int input2;
+	cin >> input2;
 
-			switch(input2){
-			case 1:
-				name = top4[1];
-				return name;
-			case 2:
-				name = top4[2];
-				return name;
-			case 3:
-				name = top4[3];
-				return name;
-			case 4:
-				break;
+	switch(input2){
+	case 1:
+		name = top4[1];
+		return name;
+	case 2:
+		name = top4[2];
+		return name;
+	case 3:
+		name = top4[3];
+		return name;
+	case 4:
+		break;
 	}
+	return name;
 }
 
 TransportGrid<string> *createGraphPreset(string filename) {
@@ -263,9 +280,9 @@ TransportGrid<string> *createGraphPreset(string filename) {
 
 			if (routes.size() > 0) {
 				auto r = routes.back();
-				r->addStop(arg2);
 
-				if (r == routes[0])	r->addStop(arg1);
+				if (r->getStops().size() == 0)	r->addStop(arg1);
+				r->addStop(arg2);
 			}
 		}
 		else if (command == "D_EDGE") {
@@ -274,9 +291,9 @@ TransportGrid<string> *createGraphPreset(string filename) {
 
 			if (routes.size() > 0) {
 				auto r = routes.back();
-				r->addStop(arg2);
 
-				if (r == routes[0])	r->addStop(arg1);
+				if (r->getStops().size() == 0)	r->addStop(arg1);
+				r->addStop(arg2);
 			}
 		}
 		else if (command == "ROUTE") {

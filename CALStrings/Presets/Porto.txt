@@ -33,32 +33,32 @@ STATION Coimbroes 			BT
 STATION S.Roque 			B	
 STATION Aliados 			BM
 
-ROUTE Linha Laranja (Metro)
-U_EDGE Viso				Matosinhos			24000	4.8	    M
-U_EDGE Casa_da_Musica	Viso				14400	3.88    M
-U_EDGE Lapa				Casa_da_Musica		7200	1.44    M
-U_EDGE Trindade			Lapa				9600	1.92    M
-U_EDGE Bolhao			Trindade			4800	0.96    M
-U_EDGE Heroismo			Bolhao				4800	0.96    M
-U_EDGE Campanha			Heroismo			7200	1.44    M
+ROUTE Linha Laranja
 U_EDGE Contumil			Campanha			9600	1.92    M
+U_EDGE Campanha			Heroismo			7200	1.44    M
+U_EDGE Heroismo			Bolhao				4800	0.96    M
+U_EDGE Bolhao			Trindade			4800	0.96    M
+U_EDGE Trindade			Lapa				9600	1.92    M
+U_EDGE Lapa				Casa_da_Musica		7200	1.44    M
+U_EDGE Casa_da_Musica	Viso				14400	3.88    M
+U_EDGE Viso				Matosinhos			24000	4.8	    M
 
-ROUTE Linha Amarela (Metro)
-U_EDGE IPO				Hospital_S.Joao		4800	0.96    M
-U_EDGE Polo_Universitario	IPO				4800	0.96    M
-U_EDGE Salgueiros		Polo_Universitario	7200	1.44    M
-U_EDGE Combatentes		Salgueiros			4800	0.96    M
-U_EDGE Marques			Combatentes			7200	1.44    M
-U_EDGE Faria_Guimaraes	Marques				4800	0.96    M
-U_EDGE Trindade			Faria_Guimaraes		7200	1.44    M
-U_EDGE Aliados			Trindade			2400	0.48    M
+ROUTE Linha Amarela
+U_EDGE Hospital_S.Joao	IPO					4800	0.96    M
+U_EDGE IPO				Polo_Universitario	4800	0.96    M
+U_EDGE Polo_Universitario Salgueiros		7200	1.44    M
+U_EDGE Salgueiros		Combatentes			4800	0.96    M
+U_EDGE Combatentes		Marques				7200	1.44    M
+U_EDGE Marques			Faria_Guimaraes		4800	0.96    M
+U_EDGE Faria_Guimaraes	Trindade			7200	1.44    M
+U_EDGE Trindade			Aliados				2400	0.48    M
 U_EDGE Aliados			S.Bento				2400	0.48    M
 U_EDGE S.Bento			Jardim_do_Morro		4800	0.96    M
 U_EDGE Jardim_do_Morro	General_Torres		4800	0.96    M
 U_EDGE General_Torres	Camara_de_Gaia		2400	0.48    M
 U_EDGE Camara_de_Gaia	Joao_de_Deus		4800	0.96    M
 
-ROUTE Linha de Aveiro (Comboio)
+ROUTE Linha de Aveiro
 U_EDGE Coimbroes		General_Torres		48000	2.4    T
 U_EDGE General_Torres	Campanha			60000	3.0    T
 U_EDGE Campanha			Contumil			36000	1.8    T
@@ -73,6 +73,8 @@ U_EDGE S.Roque			Contumil			12600	1.4   B
 U_EDGE Contumil			Areosa				18000	2.6   B
 U_EDGE Areosa			Hospital_S.Joao		12600	1.52  B
 U_EDGE Hospital_S.Joao	IPO					3600	1     B
+
+ROUTE Autocarro 304
 U_EDGE Joao_de_Deus		Camara_de_Gaia		9000	1     B
 U_EDGE Camara_de_Gaia	Makro				9000	1     B
 U_EDGE Makro			Coimbroes			10800	1.16  B

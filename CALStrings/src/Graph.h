@@ -30,7 +30,7 @@ template <class T>
 class Vertex {
 	T info;                // contents
 	vector<Edge<T> *> adj;  // outgoing edges
-	bool visited;          // auxiliary field
+	bool visited = false;          // auxiliary field
 
 	// Improved algorithm uses dijkstra thrice, concurrently
 	double dist = 0;
@@ -130,7 +130,6 @@ public:
 	bool addStationEdge(const T &sourc, const T &dest, double dist, double vel, double price);
 	int getNumVertex() const;
 	vector<Vertex<T> *> getVertexSet() const;
-	vector<string> getAllStations();
 
 	// Fp05 - single source
 	void dijkstraShortestPath(const T &s);
@@ -425,22 +424,130 @@ class TransportGrid: public Graph<T> {
 	void *busWrapper(void *queue);
 	void *trainWrapper(void *queue);
 	double improvedAlgorithmThread(const Vertex<T> *origin, const Vertex<T> *dest, MutablePriorityQueue<Vertex<T>> *priorityQueue, string type, int iT);
+
+	Route* findRoute(const string source);
 public:
 	void setRoutes(vector<Route *> r);
+	vector<Route *> getRoutes();
+
+	MutablePriorityQueue<Stop> approximateStringMatching(const string source);
+	bool ExactStringMatching(const string source);
+
+	vector <Route *> getRoutesWith(const string source);
+	string ShowInfo(const string source, int type);
 
 	bool addStation(const T &in, const string mode);
 	bool addConnection(const T &origin, const T &dest, double dist, double price, string type);
 	bool addUConnection(const T &origin, const T &dest, double dist, double price, string type);
-	vector<string> approximateStringMatchingImproved(const string source);
-	vector<Route *> getRoutes();
+
 	double dijkstraAlgorithm(const T &origin, const T &dest);
 	double improvedAlgorithm(const T &origin, const T &dest);
-	int levDistance(const string source, const string target);
-	string approximateStringMatching(const string source);
 };
 
 template <class T>
+Route* TransportGrid<T>::findRoute(const string source) {
+	for (auto route : routes) {
+		if (route->getName() == source)		return route;
+	}
+	return NULL;
+}
+
+template <class T>
 void TransportGrid<T>::setRoutes(vector<Route *> r) {routes = r;}
+
+template <class T>
+vector<Route *> TransportGrid<T>::getRoutes(){return routes;}
+
+/*
+template<class T>
+MutablePriorityQueue<Stop> TransportGrid<T>::approximateStringMatching(const string source)
+{
+	vector<Route *> routes = this->getRoutes();
+	vector<nameAndCost> ncvec;
+	for(unsigned int i = 0; i < routes.size(); i++){
+		ncvec.push_back(routes[i]->approximateStringMatching(source));
+	}
+	sort(ncvec.begin(), ncvec.end(), compareByCost);
+	// Select top 3
+	vector <string> top;
+	for(int i = 0; i < 4; i++){
+		top.push_back(ncvec[i].name);
+	}
+	return top;
+}
+*/
+
+template <class T>
+bool TransportGrid<T>::ExactStringMatching(const string source) {
+	for (auto route : getRoutes())
+		if (route->getName() == source || route->hasStop(source))	return true;
+
+	return false;
+}
+
+template <class T>
+vector<Route *> TransportGrid<T>::getRoutesWith(const string source){
+	vector<Route *> v;
+
+	for (auto route : getRoutes())
+		if (route->hasStop(source))	v.push_back(route);
+
+	return v;
+}
+
+template <class T>
+string TransportGrid<T>::ShowInfo(const string source, int type) {
+	// Type: 0 - Origin Choice, 1 - Destination Choice
+
+	string input;
+	Route* r = findRoute(source);
+
+	// ROUTE
+	if (r != NULL) {
+		cout << "## " << source << " (Route) ##\n\n";
+		cout << "This route passes through the following stops:" << endl;
+
+		vector<Stop> stops = r->getStops();
+		int i = 1;
+		for (auto stop : stops) {
+			cout << i << ". " << stop.getName() << "\n";
+			i++;
+		}
+		cout << "\nType the stop number to get more info:" << endl;
+
+		cin.clear();
+		cin >> input;
+
+		unsigned int val = stoi(input, nullptr);
+
+		if (val > 0 && val <= stops.size())		return ShowInfo(stops[val - 1].getName(), type);
+		else									return "";
+	}
+
+	// STOP
+	else {
+		cout << "## " << source << " (Stop) ##\n\n";
+		cout << "This stop passes through the following routes:\n";
+
+		vector<Route *> routes = getRoutesWith(source);
+		int i = 1;
+		for (auto route : routes) {
+			cout << i << "." << route->getName() << "\n";
+			i++;
+		}
+		cout << "\nIf you wish to make this stop your "<< ((type == 0) ? "origin" : "destination") << " press '0'.\n";
+		cout << "Otherwise type the route number to get more info:" << endl;
+
+		cin.clear();
+		cin >> input;
+
+		unsigned int val = stoi(input, nullptr);
+
+		if (val == 0)								return source;
+		else if (val > 0 && val <= routes.size())	return ShowInfo(routes[val - 1]->getName(), type);
+		else										return "";
+	}
+}
 
 template <class T>
 double TransportGrid<T>::getSpeed(string type) {
@@ -458,12 +565,6 @@ double TransportGrid<T>::getSpeed(string type) {
  * Graph type T must support string conversion (or be a string) and it is assumed that no specific element was added
  * Ex: If "stationX(M)" doesn't exist, it assumes "stationX(B)" and "stationX(T)" don't exist either
  */
-
-template <class T>
-vector<Route *> TransportGrid<T>::getRoutes(){
-	return routes;
-}
-
 template <class T>
 bool TransportGrid<T>::addStation(const T &in, const string mode) {
 	const bool hasMetro = (mode.find('M', 0) != mode.npos);
@@ -516,7 +617,7 @@ void *TransportGrid<T>::metroWrapper(void *queue) {
 	((MutablePriorityQueue<Vertex<T>>) queue)->insert(dest);
 
 	double metroDist = improvedAlgorithmThread(origin, dest, queue, "M");
-	pthread_exit(NULL);
+	return NULL;
 }
 
 template <class T>
@@ -529,7 +630,7 @@ void *TransportGrid<T>::busWrapper(void *queue) {
 	((MutablePriorityQueue<Vertex<T>>) queue)->insert(dest);
 
 	double busDist = improvedAlgorithmThread(origin, dest, queue, "B");
-	pthread_exit(NULL);
+	return NULL;
 }
 
 template <class T>
@@ -542,7 +643,7 @@ void *TransportGrid<T>::trainWrapper(void *queue) {
 	((MutablePriorityQueue<Vertex<T>>) queue)->insert(dest);
 
 	double trainDist = improvedAlgorithmThread(origin, dest, queue, "T");
-	pthread_exit(NULL);
+	return NULL;
 }
 
 
@@ -704,122 +805,5 @@ double singleTransportationDijkstra(const Vertex<T> *origin, const Vertex<T> *de
 		}
 	}
 }
-
-template<class T>
-vector<string> Graph<T>::getAllStations(){
-	vector<string> stations;
-	for (auto vertex : vertexSet) {
-		if(vertex->type == "central")
-			stations.push_back(vertex->info);
-	}
-	return stations;
-
-}
-
-template<class T>
-int TransportGrid<T>::levDistance(const string source, const string target)
-	{
-	  // Step 1
-	  const int n = source.length();
-	  const int m = target.length();
-	  if (n == 0) {
-	    return m;
-	  }
-	  if (m == 0) {
-	    return n;
-	  }
-	  // Good form to declare a TYPEDEF
-	  typedef vector<vector<int>> Tmatrix;
-	  Tmatrix matrix(n+1);
-	  // Size the vectors in the 2.nd dimension. Unfortunately C++ doesn't
-	  // allow for allocation on declaration of 2.nd dimension of vec of vec
-	  for (int i = 0; i <= n; i++) {
-	    matrix[i].resize(m+1);
-	  }
-	  // Step 2
-	  for (int i = 0; i <= n; i++) {
-	    matrix[i][0]=i;
-	  }
-	  for (int j = 0; j <= m; j++) {
-	    matrix[0][j]=j;
-	  }
-	  // Step 3
-	  for (int i = 1; i <= n; i++) {
-	    const char s_i = source[i-1];
-	    // Step 4
-	    for (int j = 1; j <= m; j++) {
-	      const char t_j = target[j-1];
-	      // Step 5
-	      int cost;
-	      if (s_i == t_j) {
-	        cost = 0;
-	      }
-	      else {
-	        cost = 1;
-	      }
-	      // Step 6
-	      const int above = matrix[i-1][j];
-	      const int left = matrix[i][j-1];
-	      const int diag = matrix[i-1][j-1];
-	      int cell = min( above + 1, min(left + 1, diag + cost));
-	      // Step 6A: Cover transposition, in addition to deletion,
-	      // insertion and substitution. This step is taken from:
-	      // Berghel, Hal ; Roach, David : "An Extension of Ukkonen's
-	      // Enhanced Dynamic Programming ASM Algorithm"
-	      // (http://www.acm.org/~hlb/publications/asm/asm.html)
-	      if (i>2 && j>2) {
-	        int trans=matrix[i-2][j-2]+1;
-	        if (source[i-2]!=t_j) trans++;
-	        if (s_i!=target[j-2]) trans++;
-	        if (cell>trans) cell=trans;
-	      }
-	      matrix[i][j]=cell;
-	    }
-	  }
-	  // Step 7
-	  return matrix[n][m];
-	}
-
-template<class T>
-string TransportGrid<T>::approximateStringMatching(const string source)
-	{
-	const int maxCost = 20;
-	int currCost=0;
-	int cost = 100;
-	vector<string> stations = this->getAllStations();
-	string finalTarget;
-	string target;
-	for(unsigned int i = 0; i < stations.size(); i++){
-		target = stations[i];
-		currCost=levDistance(source, target);
-		if(currCost < maxCost){
-			if(currCost < cost){
-				finalTarget = target;
-				cost = currCost;
-			}
-		}
-	}
-	return finalTarget;
-}
-
-template<class T>
-vector<string> TransportGrid<T>::approximateStringMatchingImproved(const string source)
-	{
-	vector<Route *> routes = this->getRoutes();
-	vector<nameAndCost> ncvec;
-	for(unsigned int i = 0; i < routes.size(); i++){
-		ncvec.push_back(routes[i]->approximateStringMatching(source));
-	}
-	sort(ncvec.begin(), ncvec.end(), compareByCost);
-	// Select top 3
-	vector <string> top;
-	for(int i = 0; i < 4; i++){
-		top.push_back(ncvec[i].name);
-	}
-	return top;
-	}
-
-
-
 
 #endif /* GRAPH_H_ */
