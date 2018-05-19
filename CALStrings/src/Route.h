@@ -100,7 +100,7 @@ int Route::levDistance(const string source, const string target)
  	nameAndCost Route::approximateStringMatching(const string source)
 	{
  	nameAndCost nc;
-	const int maxCost = 4;
+	const int maxCost = 20;
 	int currCost=0;
 	int cost = 100;
 	//vector<string> stations = this->getAllStations();
@@ -109,7 +109,7 @@ int Route::levDistance(const string source, const string target)
 	vector<string> stops = getStops();
 	for(unsigned int i = 0; i < stops.size(); i++){
 		target = stops[i];
-		levDistance(source, target);
+		currCost = levDistance(source, target);
 		if(currCost < maxCost){
 			if(currCost < cost){
 				finalTarget = target;
@@ -120,8 +120,6 @@ int Route::levDistance(const string source, const string target)
 	}
 	nc.name = finalTarget;
 	nc.cost = cost;
-	cout << "AAAAAAAAAAAAAAAAAAH"<< endl;
-	cout << nc.name;
 	return nc;
 }
 

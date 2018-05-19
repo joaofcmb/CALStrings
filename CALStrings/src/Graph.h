@@ -431,7 +431,8 @@ public:
 	bool addStation(const T &in, const string mode);
 	bool addConnection(const T &origin, const T &dest, double dist, double price, string type);
 	bool addUConnection(const T &origin, const T &dest, double dist, double price, string type);
-
+	vector<string> approximateStringMatchingImproved(const string source);
+	vector<Route *> getRoutes();
 	double dijkstraAlgorithm(const T &origin, const T &dest);
 	double improvedAlgorithm(const T &origin, const T &dest);
 	int levDistance(const string source, const string target);
@@ -457,6 +458,12 @@ double TransportGrid<T>::getSpeed(string type) {
  * Graph type T must support string conversion (or be a string) and it is assumed that no specific element was added
  * Ex: If "stationX(M)" doesn't exist, it assumes "stationX(B)" and "stationX(T)" don't exist either
  */
+
+template <class T>
+vector<Route *> TransportGrid<T>::getRoutes(){
+	return routes;
+}
+
 template <class T>
 bool TransportGrid<T>::addStation(const T &in, const string mode) {
 	const bool hasMetro = (mode.find('M', 0) != mode.npos);
@@ -794,6 +801,25 @@ string TransportGrid<T>::approximateStringMatching(const string source)
 	}
 	return finalTarget;
 }
+
+template<class T>
+vector<string> TransportGrid<T>::approximateStringMatchingImproved(const string source)
+	{
+	vector<Route *> routes = this->getRoutes();
+	vector<nameAndCost> ncvec;
+	for(unsigned int i = 0; i < routes.size(); i++){
+		ncvec.push_back(routes[i]->approximateStringMatching(source));
+	}
+	sort(ncvec.begin(), ncvec.end(), compareByCost);
+	// Select top 3
+	vector <string> top;
+	for(int i = 0; i < 4; i++){
+		top.push_back(ncvec[i].name);
+	}
+	return top;
+	}
+
+
 
 
 #endif /* GRAPH_H_ */

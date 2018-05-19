@@ -45,6 +45,8 @@ int main() {
 
 }
 
+string checkString(vector<string> top4);
+
 void presetTest(string presetId) {
 	TransportGrid<string>* preset = createGraphPreset("Presets\\" + presetId + ".txt");
 	GraphViewer *gv = new GraphViewer(1200, 800, true);
@@ -56,21 +58,46 @@ void presetTest(string presetId) {
 		string input;
 		string origin, dest;
 		double dist;
+
+
 		cout << "1. Approximate String Matching" << endl;
 		cout << "2. Exact String Matching" << endl;
+
 		cin >> input;
+
 		cout << "-- Choose your starting location: --" << endl;
+
 		cin.ignore();
 		cin.clear();
 		getline(cin, origin);
-		if(input == "1")
-			origin = preset->approximateStringMatching(origin);
+
+		if(input == "1"){
+			vector<string> top4 = preset->approximateStringMatchingImproved(origin);
+			origin = top4[0];
+			cout << "Origin: " << origin << endl;
+			origin = checkString(top4);
+			cout << "Alright, your origin is: " << origin << endl
+			<< endl;;
+		}
+
+
 		//else
-			//origin = preset->exactStringMatching(origin);
-		cout << "Origin: " << origin << endl;
+		//origin = preset->exactStringMatching(origin);
+
 		cout << "-- Choose your destination: --" << endl;
+
+		cin.ignore();
+		cin.clear();
 		getline(cin, dest);
-		if(input == "1")
+
+		if(input == "1"){
+			vector<string> top4 = preset->approximateStringMatchingImproved(dest);
+			dest = top4[0];
+			cout << "Destination: " << dest << endl;
+			dest = checkString(top4);
+			cout << "Alright, your destination is: " << dest << endl;
+		}
+
 			dest = preset->approximateStringMatching(dest);
 		//else
 			//dest = preset->exactStringMatching(dest);
@@ -185,6 +212,36 @@ void genTest() {
 		auto finish = std::chrono::high_resolution_clock::now();
 		auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
 		cout << "processing grid " << n << " x " << n << " average time (nano-seconds)=" << (elapsed / (n*n)) << endl;
+	}
+}
+
+string checkString(vector<string> top4){
+
+	string name;
+	cout << "Did we get it right or did you mean: "
+			<< endl << "{"
+			<< endl << "	1." << top4[1]
+			<< endl << "	2." << top4[2]
+			<< endl << "	3." << top4[3] << "?"
+			<< endl << "}"
+			<< endl
+			<< endl << "4. Yes we got it right :3" << endl;
+
+			int input2;
+			cin >> input2;
+
+			switch(input2){
+			case 1:
+				name = top4[1];
+				return name;
+			case 2:
+				name = top4[2];
+				return name;
+			case 3:
+				name = top4[3];
+				return name;
+			case 4:
+				break;
 	}
 }
 
