@@ -52,9 +52,8 @@ void presetTest(string presetId) {
 
 	preset->displayGraph(gv);
 
-
 	while (1) {
-		char input;
+		string input;
 		string origin, dest;
 		double dist;
 		cout << "1. Approximate String Matching" << endl;
@@ -62,50 +61,48 @@ void presetTest(string presetId) {
 		cin >> input;
 		cout << "-- Choose your starting location: --" << endl;
 		cin.ignore();
+		cin.clear();
 		getline(cin, origin);
-		cout << origin << endl;
-		if(input == 1)
+		if(input == "1")
 			origin = preset->approximateStringMatching(origin);
-		cout << origin << endl;
 		//else
 			//origin = preset->exactStringMatching(origin);
+		cout << "Origin: " << origin << endl;
 		cout << "-- Choose your destination: --" << endl;
-		cin.clear();
-		cin.ignore();
 		getline(cin, dest);
-		if(input == 1)
+		if(input == "1")
 			dest = preset->approximateStringMatching(dest);
-		cout << dest << endl;
 		//else
 			//dest = preset->exactStringMatching(dest);
+		cout << "Destination: " << dest << endl;
 		cout << "-- Choose your preference (1 - 4 | press any other key to exit) --" << endl;
 		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n"
 				<< "4. Number of transport transfers\n"  <<"5. Default (considers various parameters)" << endl;
 
 		cin >> input;
 
-		switch(input) {
-		case '1':
+		switch(stoi(input, nullptr)) {
+		case 1:
 			preset->setWeights("price");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			cout << "- Price: " << dist <<"€" << endl;
 			break;
-		case '2':
+		case 2:
 			preset->setWeights("time");
 			dist = preset->dijkstraAlgorithm(origin, dest)/60;
 			cout << "- Total Time: " << dist << " minutes" << endl;
 			break;
-		case '3':
+		case 3:
 			preset->setWeights("distance");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			cout << "- Distance: " << dist << " meters" <<endl;
 			break;
-		case '4':
+		case 4:
 			preset->setWeights("transfer");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			cout << "- Number of vehicle changes: " << dist << endl;
 			break;
-		case '5':
+		case 5:
 			preset->setWeights("default");
 			dist = preset->dijkstraAlgorithm(origin, dest);
 			break;

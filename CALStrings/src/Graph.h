@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cfloat>
 #include <pthread.h>
-
 #include "MutablePriorityQueue.h"
 #include "Route.h"
 
@@ -42,7 +41,7 @@ class Vertex {
 	int queueIndex = 0; 		// required by MutablePriorityQueue
 	bool processing = false;
 
-	string type = NULL;
+	string type = "";
 
 public:
 	Vertex(T in);
@@ -703,7 +702,8 @@ template<class T>
 vector<string> Graph<T>::getAllStations(){
 	vector<string> stations;
 	for (auto vertex : vertexSet) {
-		stations.push_back(vertex->info);
+		if(vertex->type == "central")
+			stations.push_back(vertex->info);
 	}
 	return stations;
 
@@ -776,22 +776,21 @@ int TransportGrid<T>::levDistance(const string source, const string target)
 template<class T>
 string TransportGrid<T>::approximateStringMatching(const string source)
 	{
-	const int maxCost = 4;
+	const int maxCost = 20;
 	int currCost=0;
 	int cost = 100;
-	//vector<string> stations = this->getAllStations();
+	vector<string> stations = this->getAllStations();
 	string finalTarget;
 	string target;
-	for(unsigned int i = 0; i < routes.size(); i++){
-		target = routes[i];
-		levDistance(source, target);
+	for(unsigned int i = 0; i < stations.size(); i++){
+		target = stations[i];
+		currCost=levDistance(source, target);
 		if(currCost < maxCost){
 			if(currCost < cost){
 				finalTarget = target;
 				cost = currCost;
 			}
 		}
-
 	}
 	return finalTarget;
 }
