@@ -396,8 +396,8 @@ void approximateStringTest(){
 			// roda o algoritmo
 			aux = testRoute.AproximateStringMatching(P,T);
 			auto finish = std::chrono::high_resolution_clock::now();
-			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
-			cout << "Average time (nano-seconds)=" << (elapsed) << endl << "===================" << endl;
+			auto elapsed = chrono::duration_cast<chrono::milliseconds>(finish - start).count();
+			cout << "Average time (milliseconds)=" << (elapsed) << endl << "===================" << endl;
 		}
 }
 
@@ -405,13 +405,13 @@ void exactStringTest(){
 	Route testRoute = Route("testRoute");
 	string T;
 	string P;
-	for (int n = 1000; n <= 10000; n+=1000) {
+	for (int n = 100; n <= 1000; n+=100) {
 
 			cout << "===================" << endl
 			<< "Generating target string with length of" << n << " chars..." << endl;
 			T = genStringN(n);
-			cout << "Generating pattern string with length " << n-100 << " chars..." << endl;
-			P = genStringN(n-100);
+			cout << "Generating pattern string with length " << n-10 << " chars..." << endl;
+			P = genStringN(n-10);
 			cout << "Executing algorithm ..." << endl;
 
 			auto start = std::chrono::high_resolution_clock::now();
@@ -421,8 +421,8 @@ void exactStringTest(){
 			testRoute.StringMatching(P,T);
 			}
 			auto finish = std::chrono::high_resolution_clock::now();
-			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
-			cout << "Average time for algorithm to run 1000 times (nano-seconds)=" << (elapsed) << endl;
+			auto elapsed = chrono::duration_cast<chrono::milliseconds>(finish - start).count();
+			cout << "Average time for algorithm to run 1000 times (milliseconds)=" << (elapsed) << endl;
 		}
 }
 
