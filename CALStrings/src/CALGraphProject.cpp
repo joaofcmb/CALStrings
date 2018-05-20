@@ -5,7 +5,6 @@
 #include <Windows.h>
 #include <vector>
 #include <set>
-
 #include "GraphViewer\GraphViewer.h"
 #include "CALGraphProject.h"
 #include "Graph.h"
@@ -22,14 +21,15 @@ using namespace std;
  *
  * 3 - Display it using the GUI (Both the Graph and an highlighted path)
  */
-
+void stringTest();
 int main() {
 	while(1) {
 		// Choose what to do (Test Preset, Procedurally Generated Graph Test, etc..)
 		cout << "> CHOOSE AN OPTION: --\n";
 		cout << "[1] Porto Preset Test --\n";
 		cout << "[2] Procedurally Generated Graph Test \n";
-		cout << "[3] Exit Application "<< endl;
+		cout << "[3] String Matching Test \n";
+		cout << "[4] Exit Application "<< endl;
 
 		switch(getchar()) {
 		case '1':
@@ -39,6 +39,9 @@ int main() {
 			genTest();
 			break;
 		case '3':
+			stringTest();
+			break;
+		case '4':
 			return 0;
 		default:
 			cout << "OUT OF RANGE!\n\n";
@@ -357,3 +360,90 @@ TransportGrid<string> *createGraphPreset(string filename) {
 	infile.close();
 	return g;
 }
+
+
+
+string genStringN(int n){
+	string s;
+	for(int i = 0; i < n; i++){
+		s = s+"a";
+	}
+	return s;
+}
+
+void approximateStringTest(){
+	Route testRoute = Route("testRoute");
+	int aux;
+	string T;
+	string P;
+
+	for (int n = 100; n <= 1000; n+= 100) {
+
+			cout << "===================" << endl
+					<< "Generating target string with length of" << n << " chars..." << endl;
+			T = genStringN(n);
+			cout << "Generating pattern string with length " << n-100 << " chars..." << endl;
+			P = genStringN(n-10);
+			cout << "Executing algorithm ..." << endl;
+
+			auto start = std::chrono::high_resolution_clock::now();
+			// roda o algoritmo
+			aux = testRoute.AproximateStringMatching(P,T);
+			auto finish = std::chrono::high_resolution_clock::now();
+			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
+			cout << "Average time (nano-seconds)=" << (elapsed / (n*n)) << endl << "===================" << endl;
+		}
+}
+
+void exactStringTest(){
+	Route testRoute = Route("testRoute");
+	string T;
+	string P;
+	for (int n = 1; n <= 10000; n+=1000) {
+
+			cout << "===================" << endl
+			<< "Generating target string with length of" << n << " chars..." << endl;
+			T = genStringN(n);
+			cout << "Generating pattern string with length " << n-1000 << " chars..." << endl;
+			P = genStringN(n-1000);
+			cout << "Executing algorithm ..." << endl;
+
+			auto start = std::chrono::high_resolution_clock::now();
+
+			// roda o algoritmo
+			for(int i = 0; i < 1000 ; i++){
+			testRoute.StringMatching(P,T);
+			}
+			auto finish = std::chrono::high_resolution_clock::now();
+			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
+			cout << "Average time for algorithm to run 1000 times (nano-seconds)=" << (elapsed / (n*n)) << endl;
+		}
+}
+
+void stringTest() {
+
+
+	char input;
+
+	cout << "> CHOOSE AN OPTION: \n"
+		<< "[1] Approximate String Matching Test \n"
+		<< "[2] Exact String Matching Test \n"
+		<< "[3] Exit \n";
+
+	cin >> input;
+
+	switch(input){
+	case '1':
+		approximateStringTest();
+		cin.ignore();
+		break;
+	case '2':
+		exactStringTest();
+		cin.ignore();
+		break;
+	case '3':
+		cin.ignore();
+		return;
+	}
+}
+

@@ -44,8 +44,7 @@ class Route {
 	string name;
 	vector<Stop> stops;
 
-	int AproximateStringMatching(const string source, const string target);
-	int StringMatching(const string text, const string pattern);
+
 public:
 	Route(string name);
 
@@ -56,6 +55,8 @@ public:
 
 	bool hasStop(const string source);
 	vector<Stop> possibleStops(const string source);
+	int AproximateStringMatching(const string source, const string target);
+	int StringMatching(const string text, const string pattern);
 };
 
 Route::Route(const string name): name(name) {}
