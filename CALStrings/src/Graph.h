@@ -521,7 +521,7 @@ string TransportGrid<T>::ShowInfo(const string source, int type) {
 	// ROUTE
 	if (r != NULL) {
 		cout << "## " << source << " (Route) ##\n\n";
-		cout << "This route passes through the following stops:" << endl;
+		cout << "> This route passes through the following stops:" << endl;
 
 		vector<Stop> stops = r->getStops();
 		int i = 1;
@@ -529,7 +529,7 @@ string TransportGrid<T>::ShowInfo(const string source, int type) {
 			cout << i << ". " << stop.getName() << "\n";
 			i++;
 		}
-		cout << "\nType the stop number to get more info:" << endl;
+		cout << "\n> Type the stop number to get more info:" << endl;
 
 		cin.clear();
 		cin >> input;
@@ -543,7 +543,7 @@ string TransportGrid<T>::ShowInfo(const string source, int type) {
 	// STOP
 	else {
 		cout << "## " << source << " (Stop) ##\n\n";
-		cout << "This stop passes through the following routes:\n";
+		cout << "> This stop passes through the following routes:\n";
 
 		vector<Route *> routes = getRoutesWith(source);
 		int i = 1;
@@ -551,8 +551,8 @@ string TransportGrid<T>::ShowInfo(const string source, int type) {
 			cout << i << "." << route->getName() << "\n";
 			i++;
 		}
-		cout << "\nIf you wish to make this stop your "<< ((type == 0) ? "origin" : "destination") << " press '0'.\n";
-		cout << "Otherwise type the route number to get more info:" << endl;
+		cout << "\n> If you wish to choose this stop press '0'.\n";
+		cout << "> Otherwise type the route number to get more info:" << endl;
 
 		cin.clear();
 		cin >> input;

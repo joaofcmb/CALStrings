@@ -26,10 +26,10 @@ using namespace std;
 int main() {
 	while(1) {
 		// Choose what to do (Test Preset, Procedurally Generated Graph Test, etc..)
-		cout << "-- What do you want to do? --\n";
-		cout << "-- 1. Porto Preset Test --\n";
-		cout << "-- 2. Procedurally Generated Graph Test --\n";
-		cout << "-- 3. Exit Application --"<< endl;
+		cout << "> CHOOSE AN OPTION: --\n";
+		cout << "[1] Porto Preset Test --\n";
+		cout << "[2] Procedurally Generated Graph Test \n";
+		cout << "[3] Exit Application "<< endl;
 
 		switch(getchar()) {
 		case '1':
@@ -41,7 +41,7 @@ int main() {
 		case '3':
 			return 0;
 		default:
-			cout << "Number out of range\n\n";
+			cout << "OUT OF RANGE!\n\n";
 			continue;
 		}
 	}
@@ -51,16 +51,17 @@ string AproximateStringMenu(string input, TransportGrid<string> *preset) {
 	MutablePriorityQueue<Stop> q = preset->ApproximateStringMatching(input);
 
 	if (q.empty()) {
-		cout << "No match for " << input << " found.\n\n";
+		cout << "NO MATCH FOR " << "\""  << input << "\"" << " FOUND!\n\n";
 		return "";
 	}
 
 	Stop* firstStop = q.extractMin();
 
-	if (firstStop->getCost() == 0)		cout << "Found match for " << firstStop->getName() << ".\n";
-	else								cout << "Closest match was " << firstStop->getName() << ".\n";
-
-	if (!q.empty())						cout << "\nHowever, the following entries were also considered:" << endl;
+	if (firstStop->getCost() == 0)		cout << "> FOUND MATCH: \n"
+												<< "	" << firstStop->getName() << ".\n";
+	else								cout << "> CLOSEST MATCH: \n "
+												<< "	" << firstStop->getName() << ".\n";
+	if (!q.empty())						cout << "\n> OTHER CANDIDATES:" << endl;
 
 	// Take rest of unique stops and put them in a vector for easy access
 	vector<string> candidates;
@@ -77,16 +78,20 @@ string AproximateStringMenu(string input, TransportGrid<string> *preset) {
 	for (string name : candidates)		cout << i++ << ". " << name << endl;
 
 	cout << "\nPress '0' to get more info on the initial match." << endl;
-	if (candidates.size() > 0)			cout << "To get more info on the other entries instead, enter the corresponding number." << endl;
+	if (candidates.size() > 0)
+		cout << "To get more info on the other entries instead, enter the corresponding number." << endl;
 
 	cin.clear();
 	cin >> input;
 
 	unsigned int val = stoi(input, nullptr);
 
-	if (val == 0)									input = firstStop->getName();
-	else if (val > 0 && val <= candidates.size())	input = candidates[val - 1];
-	else											return "";
+	if (val == 0)
+		input = firstStop->getName();
+	else if (val > 0 && val <= candidates.size())
+		input = candidates[val - 1];
+	else
+		return "";
 
 	input = preset->ShowInfo(input, 1);
 
@@ -108,8 +113,8 @@ void presetTest(string presetId) {
 		double dist;
 
 
-		cout << "1. Approximate String Matching\n";
-		cout << "2. Exact String Matching\n";
+		cout << "[1] Approximate String Matching\n";
+		cout << "[2] Exact String Matching\n";
 		cout << "Press any other character to exit" << endl;
 
 		cin.clear();
@@ -118,7 +123,7 @@ void presetTest(string presetId) {
 		if (c < '1' || c > '2')		break;
 
 
-		cout << "-- Search for Stop or Route (Origin): --" << endl;
+		cout << "> SEARCH STOP OR ROUTE (Origin): " << endl;
 
 		cin.ignore();
 		cin.clear();
@@ -131,7 +136,7 @@ void presetTest(string presetId) {
 		}
 		else {
 			if (!preset->ExactStringMatching(input)) {
-				cout << "No match for " << input << " found.\n\n";
+				cout << "NO MATCH FOR " << "\"" << input << "\"" << " FOUND.\n\n";
 				continue;
 			}
 			input = preset->ShowInfo(input, 1);
@@ -141,7 +146,7 @@ void presetTest(string presetId) {
 			origin = input;
 		}
 
-		cout << "-- Search for Stop or Route (Destination): --" << endl;
+		cout << "> SEARCH FOR STOP OR ROUTE (Destination): " << endl;
 
 		cin.ignore();
 		cin.clear();
@@ -154,7 +159,7 @@ void presetTest(string presetId) {
 		}
 		else {
 			if (!preset->ExactStringMatching(input)) {
-				cout << "No match for " << input << " found.\n\n";
+				cout << "NO MATCH FOR " << "\"" << input << "\"" << " FOUND.\n\n";
 				continue;
 			}
 			input = preset->ShowInfo(input, 1);
@@ -164,12 +169,14 @@ void presetTest(string presetId) {
 			dest = input;
 		}
 
-		cout << "\nPath from "<< origin << " to " << dest << "." << endl;
+		cout << "\nPATH FROM " << "\"" << origin << " to " << "\"" << dest << "\"" << "." << endl;
 
 
-		cout << "\n-- Choose your preference (1 - 4 | press any other key to exit) --\n";
-		cout << "1. Lowest price\n" << "2. Shortest time\n" << "3. Shortest distance\n";
-		cout << "4. Number of transport transfers\n" << "5. Default (considers various parameters)" << endl;
+		cout 	<< "\n> PREFERENCE: (1 - 4 | press any other key to exit) \n";
+		cout 	<< "[1] Lowest price\n"
+				<< "[2] Shortest time\n"
+				<< "[3] Shortest distance\n";
+		cout 	<< "[4] Number of transport transfers\n" << "[5] Default (considers various parameters)" << endl;
 
 		cin.ignore();
 		cin.clear();
@@ -178,22 +185,22 @@ void presetTest(string presetId) {
 		case '1':
 			preset->setWeights("price");
 			dist = preset->dijkstraAlgorithm(origin, dest);
-			cout << "- Price: " << dist << " euros" << endl;
+			cout << "> PRICE: " << dist << " euros" << endl;
 			break;
 		case '2':
 			preset->setWeights("time");
 			dist = preset->dijkstraAlgorithm(origin, dest)/60;
-			cout << "- Total Time: " << dist << " minutes" << endl;
+			cout << "> TIME: " << dist << " minutes" << endl;
 			break;
 		case '3':
 			preset->setWeights("distance");
 			dist = preset->dijkstraAlgorithm(origin, dest);
-			cout << "- Distance: " << dist << " meters" <<endl;
+			cout << "> DISTANCE: " << dist << " meters" <<endl;
 			break;
 		case '4':
 			preset->setWeights("transfer");
 			dist = preset->dijkstraAlgorithm(origin, dest);
-			cout << "- Number of vehicle changes: " << dist << endl;
+			cout << "> VEHICLE CHANGES: " << dist << endl;
 			break;
 		case '5':
 			preset->setWeights("default");
@@ -277,14 +284,13 @@ void genTest() {
 string checkString(vector<string> top4){
 
 	string name;
-	cout << "Did we get it right or did you mean: "
-			<< endl << "{"
-			<< endl << "	1." << top4[1]
-										<< endl << "	2." << top4[2]
-																	<< endl << "	3." << top4[3] << "?"
-																	<< endl << "}"
-																	<< endl
-																	<< endl << "4. Yes we got it right :3" << endl;
+	cout << "> DID YOU MEAN: "
+
+			<< endl << "	[1]" << top4[1]
+			<< endl << "	[2]" << top4[2]
+			<< endl << "	[3]" << top4[3]
+			<< endl << "[4] No, we got it right." << endl
+			<< endl;
 
 	int input2;
 	cin >> input2;

@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#define MAX_ACCEPTED_COST	3
+#define MAX_ACCEPTED_COST	5
 
 using namespace std;
 
