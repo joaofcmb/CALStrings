@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include <stdlib.h>
 #include <fstream>
 #include <chrono>
@@ -362,14 +363,19 @@ TransportGrid<string> *createGraphPreset(string filename) {
 }
 
 
-
-string genStringN(int n){
-	string s;
-	for(int i = 0; i < n; i++){
-		s = s+"a";
-	}
-	return s;
+string genStringN(const int max_length) {
+    string possible_characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    random_device rd;
+    mt19937 engine(rd());
+    uniform_int_distribution<> dist(0, possible_characters.size()-1);
+    string ret = "";
+    for(int i = 0; i < max_length; i++){
+        int random_index = dist(engine); //get index between 0 and possible_characters.size()-1
+        ret += possible_characters[random_index];
+    }
+    return ret;
 }
+
 
 void approximateStringTest(){
 	Route testRoute = Route("testRoute");
@@ -380,9 +386,9 @@ void approximateStringTest(){
 	for (int n = 100; n <= 1000; n+= 100) {
 
 			cout << "===================" << endl
-					<< "Generating target string with length of" << n << " chars..." << endl;
+					<< "Generating target string with length of " << n << " chars..." << endl;
 			T = genStringN(n);
-			cout << "Generating pattern string with length " << n-100 << " chars..." << endl;
+			cout << "Generating pattern string with length of" << n-10 << " chars..." << endl;
 			P = genStringN(n-10);
 			cout << "Executing algorithm ..." << endl;
 
@@ -399,13 +405,13 @@ void exactStringTest(){
 	Route testRoute = Route("testRoute");
 	string T;
 	string P;
-	for (int n = 1; n <= 10000; n+=1000) {
+	for (int n = 1000; n <= 10000; n+=1000) {
 
 			cout << "===================" << endl
 			<< "Generating target string with length of" << n << " chars..." << endl;
 			T = genStringN(n);
-			cout << "Generating pattern string with length " << n-1000 << " chars..." << endl;
-			P = genStringN(n-1000);
+			cout << "Generating pattern string with length " << n-100 << " chars..." << endl;
+			P = genStringN(n-100);
 			cout << "Executing algorithm ..." << endl;
 
 			auto start = std::chrono::high_resolution_clock::now();
