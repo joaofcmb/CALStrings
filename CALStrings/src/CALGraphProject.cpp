@@ -397,7 +397,7 @@ void approximateStringTest(){
 			aux = testRoute.AproximateStringMatching(P,T);
 			auto finish = std::chrono::high_resolution_clock::now();
 			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
-			cout << "Average time (nano-seconds)=" << (elapsed / (n*n)) << endl << "===================" << endl;
+			cout << "Average time (nano-seconds)=" << (elapsed) << endl << "===================" << endl;
 		}
 }
 
@@ -422,7 +422,7 @@ void exactStringTest(){
 			}
 			auto finish = std::chrono::high_resolution_clock::now();
 			auto elapsed = chrono::duration_cast<chrono::nanoseconds>(finish - start).count();
-			cout << "Average time for algorithm to run 1000 times (nano-seconds)=" << (elapsed / (n*n)) << endl;
+			cout << "Average time for algorithm to run 1000 times (nano-seconds)=" << (elapsed) << endl;
 		}
 }
 
